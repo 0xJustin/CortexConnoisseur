@@ -14,7 +14,7 @@ def get_papers_and_authors(author_ids, deg=2):
     doi_dict = {}
 
     for c in range(deg):
-        print("Starting iteration {} of {}".format(c+1, deg+1))
+        print("Starting iteration {} of {}".format(c+1, deg))
         # turn the set of author ids into a list
         to_query = list(last_ids)
         # get all the papers of all of the authors
@@ -41,6 +41,21 @@ def get_papers_and_authors(author_ids, deg=2):
         author_names.update(new_author_names)
         author_ids.update(new_author_ids)
 
+    # Desired output is papers, so taking the last set of authors and doing a final iteration over papers
+    print("Fetching final papers")
+    # turn the set of author ids into a list
+    to_query = list(last_ids)
+    # get all the papers of all of the authors
+    authors_papers_request = papergraph.get_authors_papers(to_query)
+    # get all the papers of all the new authors
+    new_papers = papergraph.get_paper_ids(authors_papers_request)
+    # remove duplicates (papers we've already seen) from the new papers
+    new_papers = list(set(new_papers) - all_papers)
+    # setting the level of the dict to reflect at what degree of separation we found the paper
+    print("Found {} new papers".format(len(new_papers)))
+    paper_level[deg] = new_papers
+    # add the new papers to the set of all papers
+    all_papers.update(set(new_papers))
     return author_ids, all_papers, author_level, paper_level, doi_dict
 
 
