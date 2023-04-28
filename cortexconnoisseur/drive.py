@@ -14,6 +14,7 @@ def get_papers_and_authors(author_ids, deg=2):
     doi_dict = {}
 
     for c in range(deg):
+        print("Starting iteration {} of {}".format(c+1, deg+1))
         # turn the set of author ids into a list
         to_query = list(last_ids)
         # get all the papers of all of the authors
@@ -23,6 +24,7 @@ def get_papers_and_authors(author_ids, deg=2):
         # remove duplicates (papers we've already seen) from the new papers
         new_papers = list(set(new_papers) - all_papers)
         # setting the level of the dict to reflect at what degree of separation we found the paper
+        print("Found {} new papers".format(len(new_papers)))
         paper_level[c] = new_papers
         # add the new papers to the set of all papers
         all_papers.update(set(new_papers))
@@ -30,6 +32,8 @@ def get_papers_and_authors(author_ids, deg=2):
         papers_authors_request = papergraph.get_papers_authors(new_papers)
         # get all the papers from the new authors and those papers' dois and citations
         new_author_names, new_author_ids, doi_dict = papergraph.get_author_ids(papers_authors_request)
+        print("Found {} new authors".format(len(new_author_ids)))
+
         # remove authors we've already seen
         last_ids = set(new_author_ids) - set(author_ids) 
         author_level[c+1] = list(new_author_names)
