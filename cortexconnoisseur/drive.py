@@ -22,6 +22,9 @@ def get_papers_and_authors(author_ids, deg=2):
         # get all the papers of all the new authors
         new_papers = papergraph.get_paper_ids(authors_papers_request)
         # remove duplicates (papers we've already seen) from the new papers
+        print("TESTING GOES HERE")
+
+
         new_papers = list(set(new_papers) - all_papers)
         # setting the level of the dict to reflect at what degree of separation we found the paper
         print("Found {} new papers".format(len(new_papers)))
