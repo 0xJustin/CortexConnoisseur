@@ -29,9 +29,9 @@ def get_papers_and_authors(author_ids, deg=2):
         # add the new papers to the set of all papers
         all_papers.update(set(new_papers))
         # get the all authors of the new papers
-        papers_authors_request = papergraph.get_papers_authors(new_papers)
+        papers_authors_request = papergraph.get_papers_authors(new_papers, fields='authors,externalIds,citationCount,referenceCount,isOpenAccess,venue,publicationVenue,publicationTypes,year')
         # get all the papers from the new authors and those papers' dois and citations
-        new_author_names, new_author_ids, doi_dict = papergraph.get_author_ids(papers_authors_request)
+        new_author_names, new_author_ids, doi_dict = papergraph.get_author_ids(papers_authors_request, doi_dict=doi_dict)
         print("Found {} new authors".format(len(new_author_ids)))
 
         # remove authors we've already seen
@@ -56,6 +56,10 @@ def get_papers_and_authors(author_ids, deg=2):
     paper_level[deg] = new_papers
     # add the new papers to the set of all papers
     all_papers.update(set(new_papers))
+    papers_authors_request = papergraph.get_papers_authors(new_papers, fields='authors,externalIds,citationCount,referenceCount,isOpenAccess,venue,publicationVenue,publicationTypes,year')
+    # get all the papers from the new authors and those papers' dois and citations
+    new_author_names, new_author_ids, doi_dict = papergraph.get_author_ids(papers_authors_request, doi_dict=doi_dict)
+    
     return author_ids, all_papers, author_level, paper_level, doi_dict
 
 

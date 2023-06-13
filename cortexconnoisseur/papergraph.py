@@ -99,6 +99,6 @@ def get_author_ids(papers_authors_request, doi_dict=None):
             doi = papers_authors_request[i]['externalIds'].get('DOI', None)
             if doi is None:
                 continue
-            doi_dict[doi] = papers_authors_request[i]['citationCount']
+            doi_dict[doi] = papers_authors_request[i]#['citationCount']
 
     return new_author_names, new_author_ids, doi_dict
