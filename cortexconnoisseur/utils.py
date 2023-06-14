@@ -64,9 +64,9 @@ def get_text_from_springer(doi, save=True, api_key='a287f446500eaf7e1620969d0f09
     return text
 
 def get_text_from_pubmed(pmc_id, save=True):
-    pdf_url = f"https://arxiv.org/pdf/{arxiv_id}"
+    pdf_url = f"https://www.ncbi.nlm.nih.gov/research/bionlp/RESTful/pmcoa.cgi/BioC_json/{pmc_id}/unicode"
     pdf_response = requests.get(pdf_url)
-    text = get_text_from_response(pdf_response, arxiv_id, 'arxiv', save)
+    text = get_text_from_response(pdf_response, pmc_id, 'pubmed', save)
     return text
 
 def save_text_from_publisher_batch(id_list, publisher):
