@@ -44,30 +44,35 @@ def get_text_from_arxiv(arxiv_id, save=True):
     pdf_response = requests.get(pdf_url)
     text = get_text_from_response(pdf_response, arxiv_id, 'arxiv', save)
     return text
-    
+
 
 def get_text_from_elsevier(doi, save=True):
     headers = {
         "Accept": "application/json",
         "Authorization": "Bearer YOUR_API_KEY"
     }
-    pdf_url = f"https://arxiv.org/pdf/{arxiv_id}"
+    pdf_url = f"https://api.elsevier.com/content/article/doi/{doi}"
     pdf_response = requests.get(pdf_url)
-    text = get_text_from_response(pdf_response, arxiv_id, 'elsevier', save)
+    text = get_text_from_response(pdf_response, doi, 'elsevier', save)
     return text
 
 def get_text_from_springer(doi, save=True, api_key='a287f446500eaf7e1620969d0f098d3a'):
 
     url = f'https://api.springer.com/metadata/json?q=doi:{doi}&api_key={api_key}'
-
     pdf_response = requests.get(pdf_url)
     text = get_text_from_response(pdf_response, doi, 'springer', save)
     return text
 
-def get_text_from_pubmed(pmc_id, save=True):
-    pdf_url = f"https://arxiv.org/pdf/{arxiv_id}"
+def get_text_from_pmc(pmc_id, save=True):
+    pdf_url = f"https://www.ncbi.nlm.nih.gov/research/bionlp/RESTful/pmcoa.cgi/BioC_json/{pmc_id}/unicode"
     pdf_response = requests.get(pdf_url)
-    text = get_text_from_response(pdf_response, arxiv_id, 'arxiv', save)
+    text = get_text_from_response(pdf_response, pmc_id, 'pmc', save)
+    return text
+
+def get_text_from_pubmed(pubmed_id, save=True):
+    pdf_url = f"https://www.ncbi.nlm.nih.gov/research/bionlp/RESTful/pubmed.cgi/BioC_json/{pubmed_id}/unicode"
+    pdf_response = requests.get(pdf_url)
+    text = get_text_from_response(pdf_response, pubmed_id, 'pubmed', save)
     return text
 
 def save_text_from_publisher_batch(id_list, publisher):
@@ -83,6 +88,12 @@ def save_text_from_publisher_batch(id_list, publisher):
         func = get_text_from_arxiv
     elif publisher == 'elsevier':
         func =  get_text_from_elsevier
+    elif publisher == 'springer':
+        func =  get_text_from_springer
+    elif publisher == 'pmc':
+        func =  get_text_from_pmc
+    elif publisher == 'pubmed':
+        func =  get_text_from_pubmed
     
 
     with ThreadPoolExecutor() as executor:
