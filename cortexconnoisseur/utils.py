@@ -44,6 +44,7 @@ def get_text_from_arxiv(arxiv_id, save=True):
     pdf_response = requests.get(pdf_url)
     text = get_text_from_response(pdf_response, arxiv_id, 'arxiv', save)
     return text
+    
 
 def get_text_from_elsevier(doi, save=True):
     headers = {
