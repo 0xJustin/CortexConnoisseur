@@ -49,7 +49,7 @@ def get_text_from_arxiv(arxiv_id, save=True):
 def get_text_from_elsevier(doi, save=True):
     headers = {
         "Accept": "application/json",
-        "Authorization": "Bearer f7959f89b591dd093c13de2a0e205243"
+        "Authorization": "Bearer YourAPIKey"
     }
     pdf_url = f"https://api.elsevier.com/content/article/doi/{doi}"
     #https://api.elsevier.com/content/article/doi/[DOI]?APIKey=[APIKey]&httpAccept=text/plain
@@ -58,7 +58,7 @@ def get_text_from_elsevier(doi, save=True):
     text = get_text_from_response(pdf_response, doi, 'elsevier', save)
     return text
 
-def get_text_from_springer(doi, save=True, api_key='a287f446500eaf7e1620969d0f098d3a'):
+def get_text_from_springer(doi, save=True, api_key='APIKey'):
 
     pdf_url = f'https://api.springer.com/metadata/json?q=doi:{doi}&api_key={api_key}'
     pdf_response = requests.get(pdf_url)
