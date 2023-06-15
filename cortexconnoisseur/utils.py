@@ -58,7 +58,7 @@ def get_text_from_elsevier(doi, save=True):
 
 def get_text_from_springer(doi, save=True, api_key='a287f446500eaf7e1620969d0f098d3a'):
 
-    url = f'https://api.springer.com/metadata/json?q=doi:{doi}&api_key={api_key}'
+    pdf_url = f'https://api.springer.com/metadata/json?q=doi:{doi}&api_key={api_key}'
     pdf_response = requests.get(pdf_url)
     text = get_text_from_response(pdf_response, doi, 'springer', save)
     return text
