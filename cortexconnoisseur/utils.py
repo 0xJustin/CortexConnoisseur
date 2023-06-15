@@ -49,9 +49,11 @@ def get_text_from_arxiv(arxiv_id, save=True):
 def get_text_from_elsevier(doi, save=True):
     headers = {
         "Accept": "application/json",
-        "Authorization": "Bearer YOUR_API_KEY"
+        "Authorization": "Bearer f7959f89b591dd093c13de2a0e205243"
     }
     pdf_url = f"https://api.elsevier.com/content/article/doi/{doi}"
+    #https://api.elsevier.com/content/article/doi/[DOI]?APIKey=[APIKey]&httpAccept=text/plain
+    #Above link is plain view full-text 
     pdf_response = requests.get(pdf_url)
     text = get_text_from_response(pdf_response, doi, 'elsevier', save)
     return text
@@ -64,7 +66,7 @@ def get_text_from_springer(doi, save=True, api_key='a287f446500eaf7e1620969d0f09
     return text
 
 def get_text_from_pmc(pmc_id, save=True):
-    pdf_url = f"https://www.ncbi.nlm.nih.gov/research/bionlp/RESTful/pmcoa.cgi/BioC_json/{pmc_id}/unicode"
+    pdf_url = f"https://www.ncbi.nlm.nih.gov/pmc/articles/PMC{pmc_id}/pdf"
     pdf_response = requests.get(pdf_url)
     text = get_text_from_response(pdf_response, pmc_id, 'pmc', save)
     return text
