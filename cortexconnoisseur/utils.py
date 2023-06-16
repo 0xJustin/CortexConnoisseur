@@ -3,6 +3,8 @@ from bs4 import BeautifulSoup
 import backoff
 import io
 import PyPDF2
+import xml.etree.ElementTree as ET
+import re
 
 """
 example code to scape doi's from a webpage
@@ -46,23 +48,33 @@ def get_text_from_arxiv(arxiv_id, save=True):
     return text
 
 
-def get_text_from_elsevier(doi, save=True):
-    headers = {
-        "Accept": "application/json",
-        "Authorization": "Bearer YourAPIKey"
-    }
-    pdf_url = f"https://api.elsevier.com/content/article/doi/{doi}"
-    #https://api.elsevier.com/content/article/doi/[DOI]?APIKey=[APIKey]&httpAccept=text/plain
-    #Above link is plain view full-text 
-    pdf_response = requests.get(pdf_url)
-    text = get_text_from_response(pdf_response, doi, 'elsevier', save)
-    return text
+def get_text_from_elsevier(doi, save=True, api_key = 'APIKey'):
+    
+    txt = requests.get(f'https://api.elsevier.com/content/article/doi/{doi}?APIKey={api_key}&httpAccept=text/plain')
+
+    # pdf code below to save; might come in handy elsewhere
+    
+    #headers = {
+    #    "Accept": "application/json",
+    #    "Authorization": "Bearer YourAPIKey"
+    #}
+    #pdf_url = f"https://api.elsevier.com/content/article/doi/{doi}"
+    #pdf_response = requests.get(pdf_url)
+    #text = get_text_from_response(pdf_response, doi, 'elsevier', save)
+    
+    return (txt.text)
 
 def get_text_from_springer(doi, save=True, api_key='APIKey'):
 
-    pdf_url = f'https://api.springer.com/metadata/json?q=doi:{doi}&api_key={api_key}'
-    pdf_response = requests.get(pdf_url)
-    text = get_text_from_response(pdf_response, doi, 'springer', save)
+    doi_temp = doi.replace("/", f"%2F")
+    xml_url = f'https://api.springernature.com/openaccess/jats?api_key={api_key}&q=doi%3A{doi_temp}&s=1&p=10'
+    xml_response = requests.get(xml_url)
+    xml_string = xml_response.text
+    start = xml_string.find("<body>")
+    end = xml_string.find('</body>')
+    xml_string = xml_string[start+6: end+7]
+    text = re.sub('<[^<]+?>', ' ', xml_string)
+
     return text
 
 def get_text_from_pmc(pmc_id, save=True):
