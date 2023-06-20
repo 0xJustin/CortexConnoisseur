@@ -78,15 +78,15 @@ def get_text_from_springer(doi, save=True, api_key='APIKey'):
     return text
 
 def get_text_from_pmc(pmc_id, save=True):
-    pdf_url = f"https://www.ncbi.nlm.nih.gov/pmc/articles/PMC{pmc_id}/pdf"
-    pdf_response = requests.get(pdf_url)
-    text = get_text_from_response(pdf_response, pmc_id, 'pmc', save)
-    return text
+    xml_url = f'https://www.ncbi.nlm.nih.gov/research/bionlp/RESTful/pmcoa.cgi/BioC_xml/PMC{pmc_id}/ascii'
+    xml_response = requests.get(xml_url)
 
-def get_text_from_pubmed(pubmed_id, save=True):
-    pdf_url = f"https://www.ncbi.nlm.nih.gov/research/bionlp/RESTful/pubmed.cgi/BioC_json/{pubmed_id}/unicode"
-    pdf_response = requests.get(pdf_url)
-    text = get_text_from_response(pdf_response, pubmed_id, 'pubmed', save)
+    xml_string = xml_response.text
+    print(xml_string)
+    xml_string = re.sub('<[^<]+?>', ' ', xml_string)
+    xml_string = re.sub('surname:', ' ', xml_string)
+    text = re.sub(';given-names:', ', ', xml_string)
+
     return text
 
 def save_text_from_publisher_batch(id_list, publisher):
