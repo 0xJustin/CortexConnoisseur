@@ -70,24 +70,24 @@ def get_text_from_springer(doi, save=True, api_key='APIKey'):
     xml_url = f'https://api.springernature.com/openaccess/jats?api_key={api_key}&q=doi%3A{doi_temp}&s=1&p=10'
     xml_response = requests.get(xml_url)
     xml_string = xml_response.text
-    start = xml_string.find("<body>")
-    end = xml_string.find('</body>')
-    xml_string = xml_string[start+6: end+7]
-    text = re.sub('<[^<]+?>', ' ', xml_string)
+    if(xml_string.find("<body>") == -1):
+        txt = ""
+    else:
+        start = xml_string.find("<body>")
+        end = xml_string.find('</body>')
+        xml_string = xml_string[start+6: end+7]
+        txt = re.sub('<[^<]+?>', ' ', xml_string)
 
-    return text
+    return txt
 
 def get_text_from_pmc(pmc_id, save=True):
     xml_url = f'https://www.ncbi.nlm.nih.gov/research/bionlp/RESTful/pmcoa.cgi/BioC_xml/PMC{pmc_id}/ascii'
     xml_response = requests.get(xml_url)
-
     xml_string = xml_response.text
-    print(xml_string)
     xml_string = re.sub('<[^<]+?>', ' ', xml_string)
     xml_string = re.sub('surname:', ' ', xml_string)
-    text = re.sub(';given-names:', ', ', xml_string)
-
-    return text
+    xml_string = re.sub(';given-names:', ', ', xml_string)
+    return (xml_string)
 
 def save_text_from_publisher_batch(id_list, publisher):
     from concurrent.futures import ThreadPoolExecutor
@@ -106,8 +106,7 @@ def save_text_from_publisher_batch(id_list, publisher):
         func =  get_text_from_springer
     elif publisher == 'pmc':
         func =  get_text_from_pmc
-    elif publisher == 'pubmed':
-        func =  get_text_from_pubmed
+    
     
 
     with ThreadPoolExecutor() as executor:
