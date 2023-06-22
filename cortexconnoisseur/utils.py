@@ -3,6 +3,8 @@ from bs4 import BeautifulSoup
 import backoff
 import io
 import PyPDF2
+import xml.etree.ElementTree as ET
+import re
 
 """
 example code to scape doi's from a webpage
@@ -44,31 +46,48 @@ def get_text_from_arxiv(arxiv_id, save=True):
     pdf_response = requests.get(pdf_url)
     text = get_text_from_response(pdf_response, arxiv_id, 'arxiv', save)
     return text
+
+
+def get_text_from_elsevier(doi, save=True, api_key = 'APIKey'):
     
+    txt = requests.get(f'https://api.elsevier.com/content/article/doi/{doi}?APIKey={api_key}&httpAccept=text/plain')
 
-def get_text_from_elsevier(doi, save=True):
-    headers = {
-        "Accept": "application/json",
-        "Authorization": "Bearer YOUR_API_KEY"
-    }
-    pdf_url = f"https://arxiv.org/pdf/{arxiv_id}"
-    pdf_response = requests.get(pdf_url)
-    text = get_text_from_response(pdf_response, arxiv_id, 'elsevier', save)
-    return text
+    # pdf code below to save; might come in handy elsewhere
+    
+    #headers = {
+    #    "Accept": "application/json",
+    #    "Authorization": "Bearer YourAPIKey"
+    #}
+    #pdf_url = f"https://api.elsevier.com/content/article/doi/{doi}"
+    #pdf_response = requests.get(pdf_url)
+    #text = get_text_from_response(pdf_response, doi, 'elsevier', save)
+    
+    return (txt.text)
 
-def get_text_from_springer(doi, save=True, api_key='a287f446500eaf7e1620969d0f098d3a'):
+def get_text_from_springer(doi, save=True, api_key='APIKey'):
 
-    url = f'https://api.springer.com/metadata/json?q=doi:{doi}&api_key={api_key}'
+    doi_temp = doi.replace("/", f"%2F")
+    xml_url = f'https://api.springernature.com/openaccess/jats?api_key={api_key}&q=doi%3A{doi_temp}&s=1&p=10'
+    xml_response = requests.get(xml_url)
+    xml_string = xml_response.text
+    if(xml_string.find("<body>") == -1):
+        txt = ""
+    else:
+        start = xml_string.find("<body>")
+        end = xml_string.find('</body>')
+        xml_string = xml_string[start+6: end+7]
+        txt = re.sub('<[^<]+?>', ' ', xml_string)
 
-    pdf_response = requests.get(pdf_url)
-    text = get_text_from_response(pdf_response, doi, 'springer', save)
-    return text
+    return txt
 
-def get_text_from_pubmed(pmc_id, save=True):
-    pdf_url = f"https://arxiv.org/pdf/{arxiv_id}"
-    pdf_response = requests.get(pdf_url)
-    text = get_text_from_response(pdf_response, arxiv_id, 'arxiv', save)
-    return text
+def get_text_from_pmc(pmc_id, save=True):
+    xml_url = f'https://www.ncbi.nlm.nih.gov/research/bionlp/RESTful/pmcoa.cgi/BioC_xml/PMC{pmc_id}/ascii'
+    xml_response = requests.get(xml_url)
+    xml_string = xml_response.text
+    xml_string = re.sub('<[^<]+?>', ' ', xml_string)
+    xml_string = re.sub('surname:', ' ', xml_string)
+    xml_string = re.sub(';given-names:', ', ', xml_string)
+    return (xml_string)
 
 def save_text_from_publisher_batch(id_list, publisher):
     from concurrent.futures import ThreadPoolExecutor
@@ -83,6 +102,11 @@ def save_text_from_publisher_batch(id_list, publisher):
         func = get_text_from_arxiv
     elif publisher == 'elsevier':
         func =  get_text_from_elsevier
+    elif publisher == 'springer':
+        func =  get_text_from_springer
+    elif publisher == 'pmc':
+        func =  get_text_from_pmc
+    
     
 
     with ThreadPoolExecutor() as executor:
