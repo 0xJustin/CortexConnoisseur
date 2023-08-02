@@ -75,8 +75,8 @@ if __name__ == "__main__":
     author_ids = set([3178417, 38037133, 40348417, 1744493, 145247053, 3271571, 
                       3282030, 144203599, 3595515, 4487712, 11460587, 2342352, 1736370])
     
-    author_ids, all_papers, author_level, paper_level, doi_dict = get_papers_and_authors(author_ids)
+    author_ids, all_papers, author_level, paper_level, doi_dict = get_papers_and_authors(author_ids, deg=0)
     extra_dois = utils.main("https://www.fpbase.org/references/")
-    pickle.dump(paper_level, open('papers_dict.pkl', 'wb'))
-    pickle.dump(doi_dict, open('doi_dict.pkl', 'wb'))
-    pickle.dump([author_ids, all_papers, author_level, paper_level, doi_dict, extra_dois], open("data.p", "wb"))
+    pickle.dump(paper_level, open('papers_dict_0.pkl', 'wb'))
+    pickle.dump(doi_dict, open('doi_dict_0.pkl', 'wb'))
+    pickle.dump([author_ids, all_papers, author_level, paper_level, doi_dict, extra_dois], open("data_0.p", "wb"))
