@@ -1,0 +1,20 @@
+torchrun --nproc_per_node=4 ./training.py \
+    --model_path /path/to/llama/weights/in/hf/format \
+    --Dataset_path /path/to/tokenized/papers \
+    --bf16 True \
+    --output_dir /path/to/output/directory \
+    --num_train_epochs 5 \
+    --per_device_train_batch_size 2 \
+    --per_device_eval_batch_size 0 \
+    --gradient_accumulation_steps 4 \
+    --save_strategy "steps" \
+    --save_steps 500 \
+    --save_total_limit 2 \
+    --learning_rate 2e-5 \
+    --weight_decay 0. \
+    --warmup_ratio 0.03 \
+    --lr_scheduler_type "cosine" \
+    --fsdp "full_shard auto_wrap" \
+    --fsdp_transformer_layer_cls_to_wrap 'LlamaDecoderLayer' \
+    --logging_steps 1 \
+    --tf32 True
